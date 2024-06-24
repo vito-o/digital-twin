@@ -1,0 +1,132 @@
+<script setup>
+import * as Cesium from 'cesium'
+import './Widgets/widgets.css'
+import { onMounted } from 'vue'
+
+window.CESIUM_BASE_URL = '/'
+
+// 设置cesium的token
+Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI5NjJhMjVmMC00OGFhLTQ4ZmUtOTFiNi1hYWZmYjYzOTc4MDIiLCJpZCI6MTc5NDA4LCJpYXQiOjE3MDA0NDIwMTJ9.5qvGOWqbkxsRzHfZuvYeWiSyFmtk1_4m5NIQHuW0zpE'
+
+// 设置相机的默认视角 (中国)
+Cesium.Camera.DEFAULT_VIEW_RECTANGLE = Cesium.Rectangle.fromDegrees(
+  // 西经
+  89.5,
+  // 南纬
+  20.4,
+  // 东经
+  110.4,
+  // 北纬
+  61.2
+)
+
+onMounted(async() => {
+  let viewer = new Cesium.Viewer('cesiumContainer', {
+    // 是否显示信息窗口
+    infoBox: false,
+  })
+
+  // 隐藏logo
+  viewer.cesiumWidget.creditContainer.style.display = 'none'
+
+  viewer.scene.primitives.add(
+    await Cesium.createOsmBuildingsAsync()
+  )
+
+
+
+  let rectGeometry = new Cesium.RectangleGeometry({
+    rectangle: Cesium.Rectangle.fromDegrees(
+      // 西经
+      115,
+      // 南纬
+      20,
+      // 东经
+      135,
+      // 北纬
+      30
+    ),
+    height: 0,
+    vertexFormat: Cesium.EllipsoidSurfaceAppearance.VERTEX_FORMAT
+  })
+
+  let instance = new Cesium.GeometryInstance({
+    id: 'rect',
+    geometry: rectGeometry,
+    attributes: {
+      color: Cesium.ColorGeometryInstanceAttribute.fromColor(
+        Cesium.Color.RED.withAlpha(0.5)
+      )
+    },
+    vertexFormat: Cesium.EllipsoidSurfaceAppearance.VERTEX_FORMAT
+  })
+
+  // 设置外观
+  
+  /* let material = new Cesium.Material.fromType('Color', {
+    color: Cesium.Color.AQUA.withAlpha(0.5)
+  }) */
+  
+  /* let material = new Cesium.Material.fromType('Image', {
+    image: '/texture/logo.png',
+    repeat: new Cesium.Cartesian2(2.0, 2.0),
+  }) */
+
+  /* 
+  // DiffuseMap  漫反射贴图
+  let material = new Cesium.Material.fromType('DiffuseMap', {
+    image: '/texture/logo.png',
+  }) */  
+
+  /* let material = new Cesium.Material.fromType('Grid', {
+    color: Cesium.Color.AQUA.withAlpha(0.5),
+    cellAlpha: 0.2,
+    lineCount: new Cesium.Cartesian2(4, 4),
+    lineThickness: new Cesium.Cartesian2(4.0, 4.0)
+  }) */
+
+  let material = new Cesium.Material.fromType('Water', {
+    baseWaterColor: Cesium.Color.AQUA.withAlpha(0.8),
+    distortion: 0.25,
+    normalMap: '/Assets/Textures/waterNormals.jpg'
+  })
+
+  let appearance = new Cesium.EllipsoidSurfaceAppearance({
+    material,
+    aboveGround: true,
+    translucent: true
+  })
+
+  /* let appearance = new Cesium.MaterialAppearance({
+    material
+  }) */
+
+  // 图元
+  let primitive = new Cesium.Primitive({
+    geometryInstances: [instance],
+    appearance: appearance
+  })
+
+  viewer.scene.primitives.add(primitive)
+
+
+  viewer.camera.setView(viewer.entities)
+})
+
+</script>
+
+<template>
+  <div id="cesiumContainer" ref="cesiumContainer"></div>
+</template>
+
+<style >
+*{
+  margin: 0;
+  padding: 0;
+}
+
+#cesiumContainer{
+  width: 100vw;
+  height: 100vh;
+}
+</style>

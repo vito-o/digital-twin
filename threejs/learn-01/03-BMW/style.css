@@ -1,0 +1,35 @@
+*{
+  margin: 0;
+  padding: 0;
+}
+
+canvas {
+  display: block;
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+}
+
+.home-content {
+  position: fixed;
+  top: 0;
+  right: 20px;
+}
+
+.select{
+  display: flex;
+}
+
+.select-item-color {
+  width: 50px;
+  height: 50px;
+  border: 1px solid #ccc;
+  margin: 10px;
+  display: inline-block;
+  cursor: pointer;
+  border-radius: 10px;
+  line-height: 50px;
+  text-align: center;
+}
